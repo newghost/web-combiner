@@ -1,5 +1,5 @@
 /*
-* Description: Combine all the files in a specfic folder into one file.
+* Description: Combine the files into one, support directory and config files.
 * Author: Kris Zhang
 * Blog: http://c52u.com
 */
@@ -11,26 +11,49 @@
 
   var combine = module.exports = {
     //Where codes from?
-    sourceDir: "",
+    sourceFile: "",
     //Combined to which file.
     targetFile: "",
-    //Flag: Is in the combine process already?
-    isCombine: false,
 
     //Interface
-    init: function(sourceDir, targetFile){
-      combine.sourceDir = sourceDir;
-      combine.targetFile = targetFile;
+    init: function(sourceFile, targetFile){
+      //Combine
+      fs.stat(sourceFile, function(err, stat){
+        if(err) {
+          console.log(err);
+          return;
+        }
 
-      //Combine at the first running, then watching the changes.
-      if(combine.combine()) combine.watch();
+        combine.sourceFile = sourceFile;
+        combine.targetFile = targetFile;
+
+        if(stat.isFile()){
+          var contents = fs.readFileSync(sourceFile, 'utf-8'),
+              files = [];
+
+          //read a file line-by-line
+          contents.match(/[^\r\n]+/g).forEach(function(line){
+            //comments begin with '#', remove them
+            if(line[0] != '#'){
+              console.log(path.join(combine.sourceFile, line));
+              files.push(line);
+            }
+          });
+
+          console.log("files", files );
+
+        }else{
+          //Combine at the first running, then watching the changes.
+          if(combine.combine()){
+            combine.watch();
+          }
+        }
+      });
     },
 
     //Watch changes on source folder
     watch: function(){
-      fs.watch(combine.sourceDir, function(evt, filename){
-        //When it's in the combine process, ignore the changes.
-        if(combine.isCombine) return;
+      fs.watch(combine.sourceFile, function(evt, filename){
         //combine when changes.
         combine.combine();
       });
@@ -55,24 +78,24 @@
         return false;
       }
 
-      combine.isCombine = true;
       try{
-        var files = fs.readdirSync(combine.sourceDir),
-            //File name must be consist of number, character, and "-" "_", "."
+        var files = fs.readdirSync(combine.sourceFile),
+            //File name must be consist of numbers characters or "-" "_", "."
             fileReg = /^[a-zA-Z0-9-_\.]+$/;
 
         files.forEach(function(file){
           if(fileReg.test(file)){
 
-            var fullPath = path.join(combine.sourceDir, file),
+            var fullPath = path.join(combine.sourceFile, file),
                 stat = fs.statSync(fullPath);
 
             if(!stat.isFile()){
               console.log("Skip folder:" + file);
             }else{
               var data = fs.readFileSync(fullPath);
-              oStream.write("\r\n/*" + file + "*/\r\n");
+              oStream.write("/*" + file + "*/\r\n");
               oStream.write(data);
+              oStream.write("\r\n");
 
               console.log("Adding file:" + file);
             }
@@ -81,13 +104,12 @@
           }
         });
         oStream.end();
-        console.log("Complete!");
+        console.log("Complete!\r\n\r\n");
       }
       catch(err){
         console.log(err);
         r = false;
       }
-      combine.isCombine = false;
 
       return r;
     }
