@@ -1,2 +1,2 @@
-node testCombine.js E:\apache-tomcat-new\SYNC-user-profile\src\carve\FTD2010\themes\ftd\js\_jsfiles.list E:\apache-tomcat-new\SYNC-user-profile\src\carve\FTD2010\themes\ftd\js\live\combine-files.js
+node testCombine.js test\#list.inc combine-files.js
 pause;
