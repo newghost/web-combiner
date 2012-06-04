@@ -1,6 +1,6 @@
 #config file
 
 #custom javascript modules.
+lib/a.js
 c.js
-a.js
 b.js

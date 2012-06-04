@@ -27,6 +27,7 @@
         if(stat.isFile()){
           //Combine from a config file
           var files = combine.getFiles(sourceFile);
+          
           if(combine.combine(files)){
             combine.watchFiles(files);
           }
@@ -55,7 +56,8 @@
     getFiles: function(cfgPath){
       var contents = fs.readFileSync(cfgPath, 'utf-8'),
           files = [],
-          dir = cfgPath.substring(0, cfgPath.lastIndexOf('\\'));
+          lastIdx = cfgPath.lastIndexOf('\\'),
+          dir = cfgPath.substring(0, lastIdx > -1 ? lastIdx : cfgPath.lastIndexOf('/') );
 
       //read a file line-by-line
       contents.match(/[^\r\n]+/g).forEach(function(line){
