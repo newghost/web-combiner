@@ -1,0 +1,16 @@
+/*static\css\site.css*/
+body {
+  font-size: 100%;
+}
+/*static\css\a.css*/
+/*module1*/
+.module1 {
+  font-size: 80%;
+}
+/*static\css\b.css*/
+.module2 {
+  font-size: 120%;
+}
+.module2 a{
+  color: #f00;
+}

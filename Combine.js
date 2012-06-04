@@ -59,7 +59,7 @@
 
       //read a file line-by-line
       contents.match(/[^\r\n]+/g).forEach(function(line){
-        //comments begin with '#', remove them
+        //ignore comments that begin with '#'
         if(line[0] != '#'){
           files.push(path.join(dir, line));
         }
@@ -80,7 +80,6 @@
     //Watch changes on source folder
     watchDir: function(directory){
       fs.watch(directory, function(evt, filename){
-        //combine when changes.
         combine.combineDir(directory);
       });
     },
@@ -132,7 +131,12 @@
           }
         });
         oStream.end();
-        console.log("Complete!\r\n\r\n");
+        
+        var endTime = new Date();
+        console.log("count:", files.length,
+            ", date:", new Date().toTimeString(),
+            "\r\n\r\n"
+        );
       }
       catch(err){
         console.log(err);
@@ -142,5 +146,33 @@
       return r;
     }
   };
+
+  /*
+   * parsing parameters from command line
+   * etc, node combine.js -i configfile.path -o outputfile.path
+   * the parameter will be: '-' + one character, like: parsing('-o');
+   */
+  var parsing = function(args, key){
+    if(!key || key.length != 2 || key[0] != '-') return;
+
+    var reg = new RegExp(" " + key + " ((?! -\\w ).)*", "g"),
+        param = args.match(reg);
+
+    if(param && param[0]){
+      return param[0].substr(4, 500);
+    }
+  };
+
+  //call it
+  (function(){
+    var args = process.argv.join(' ');
+        input = parsing(args, '-i'),
+        output = parsing(args, '-o');
+
+    console.log(input, output);
+
+    combine.init(input, output);
+
+  })();
 
 })();

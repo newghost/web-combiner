@@ -1,1 +1,3 @@
 Combine: Combine separate file into one using Node.js
+Working together with YUI compressor,
+It can be used to compress CSS/JS files.
