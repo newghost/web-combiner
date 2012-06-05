@@ -10,12 +10,12 @@
       path = require("path");
 
   var combine = module.exports = {
-    //Combined to which file.
+    //Combined to which file?
     targetFile: "",
 
     //Interface
-    init: function(sourceFile, targetFile){
-      //Combine type, it's a directory or cfg files
+    init: function(sourceFile, targetFile, watch){
+      //Combine type, it's a directory or cfg file
       fs.stat(sourceFile, function(err, stat){
         if(err) {
           console.log(err);
@@ -25,16 +25,16 @@
         combine.targetFile = targetFile;
 
         if(stat.isFile()){
-          //Combine from a config file
+          //get file list from the configuration files.
           var files = combine.getFiles(sourceFile);
-          
+
           if(combine.combine(files)){
-            combine.watchFiles(files);
+            watch && combine.watchFiles(files);
           }
         }else{
           //Combine at the first running, then watching the changes.
           if(combine.combineDir(sourceFile)){
-            combine.watchDir(sourceFile);
+            watch && combine.watchDir(sourceFile);
           }
         }
       });
@@ -157,7 +157,7 @@
   var parsing = function(args, key){
     if(!key || key.length != 2 || key[0] != '-') return;
 
-    var reg = new RegExp(" " + key + " ((?! -\\w ).)*", "g"),
+    var reg = new RegExp(" " + key + "((?! -\\w).)*", "g"),
         param = args.match(reg);
 
     if(param && param[0]){
@@ -165,15 +165,18 @@
     }
   };
 
-  //call it
+  /*
+  * call it
+  * -i filepath: input directory or cfg file
+  * -o filepath: output files
+  * -w: keep watch the changes?
+  */
   (function(){
     var args = process.argv.join(' ');
         input = parsing(args, '-i'),
         output = parsing(args, '-o');
 
-    console.log(input, output);
-
-    combine.init(input, output);
+    combine.init(input, output, args.indexOf(' -w') > 0);
 
   })();
 
