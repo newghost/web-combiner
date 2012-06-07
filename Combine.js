@@ -172,7 +172,7 @@
   * -w: keep watch the changes?
   */
   (function(){
-    var args = process.argv.join(' ');
+    var args = process.argv.join(' '),
         input = parsing(args, '-i'),
         output = parsing(args, '-o');
 
