@@ -1,3 +1,13 @@
 Combine: Combine separate file into one using Node.js
 Working together with YUI compressor,
 It can be used to compress CSS/JS files.
+
+Parameters:
+
+-i: input file path, it can be configuration file or dictionary;
+-o: output file path;
+-w: keep watching the changes, if no parameter just combine once;
+
+Sample:
+
+node ../Combine.js -i static/js/makefile.inc -o static/live/src.js -w
