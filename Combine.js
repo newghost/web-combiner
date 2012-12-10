@@ -18,6 +18,7 @@ var Combine;
     targetFile: "",
     files: [],          //combine list
     list: [],           //watch list
+    dir: "",            //combine root directory
     watch: false,       //listen on the changes?
 
     //Interface
@@ -57,14 +58,16 @@ var Combine;
     getFiles: function(cfgPath) {
       var contents = fs.readFileSync(cfgPath, 'utf-8'),
           files = [],
-          lastIdx = cfgPath.lastIndexOf('\\'),
-          dir = cfgPath.substring(0, lastIdx > -1 ? lastIdx : cfgPath.lastIndexOf('/') );
+          lastIdx = cfgPath.lastIndexOf('\\');
+
+      //redefine directory
+      combine.dir = cfgPath.substring(0, lastIdx > -1 ? lastIdx : cfgPath.lastIndexOf('/') );
 
       //read a file line-by-line
       contents.match(/[^\r\n]+/g).forEach(function(line) {
         //ignore comments that begin with '#'
         if (line[0] != '#') {
-          files.push(path.join(dir, line));
+          files.push(line);
         }
       });
 
@@ -82,11 +85,11 @@ var Combine;
 
     //Watch changes on source folder
     setDir: function(directory) {
+      combine.dir = directory;
+
       //Combine at the first running, then watching the changes.
-      if (combine.combineDir(directory)) {
-        combine.watch && fs.watch(directory, function() {
-          combine.combineDir(directory);
-        });
+      if (combine.combineDir()) {
+        combine.watch && fs.watch(directory, combine.combineDir);
       }
     },
 
@@ -108,25 +111,23 @@ var Combine;
     //Watch changes on a file
     watchFile: function(file) {
       try {
-        fs.watch(file, function() {
-          combine.combine();
-        });
+        fs.watch(path.join(combine.dir, file), combine.combine);
       } catch (err) {
         console.log(file, err);
       }
     },
 
     //Combine directory
-    combineDir: function(directory) {
+    combineDir: function() {
       try {
-        var allFiles = fs.readdirSync(directory),
+        var allFiles = fs.readdirSync(combine.dir),
             //File name must be consist of numbers characters or "-" "_", "."
             fileReg = /^[a-zA-Z0-9-_\.]+$/,
             files = [];
 
         allFiles.forEach(function(file) {
           if (fileReg.test(file)) {
-            files.push(path.join(directory, file));
+            files.push(file);
           } else {
             console.log("Skip file:" + file);
           }
@@ -160,12 +161,13 @@ var Combine;
 
       try {
         files.forEach(function(file) {
-          var stat = fs.statSync(file);
+          var fullPath  = path.join(combine.dir, file),
+              stat      = fs.statSync(fullPath);
 
           if (!stat.isFile()) {
             console.log("Skip folder:" + file);
           } else {
-            var data = fs.readFileSync(file);
+            var data = fs.readFileSync(fullPath);
             oStream.write("/*" + file + "*/\r\n");
             oStream.write(data);
             oStream.write("\r\n");
