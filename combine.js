@@ -13,10 +13,12 @@ var Combine;
       path = require("path");
 
   Combine = module.exports = function(sourceFile, targetFile, watch) {
-    var self  = this,
-        files = [],           //combine list
-        list  = [],           //watch list
-        dir   = "";           //combine root directory
+    var self      = this,
+        list      = [],           //watch list, files, directory, configuration
+        watchers  = [],           //watcher list, fsWatch objects
+        dir       = "";           //combine root directory
+
+    self.files = [];              //combine list
 
     //Interface
     var init = function() {
@@ -24,7 +26,7 @@ var Combine;
       fs.stat(sourceFile, function(err, stat) {
         if (err) {
           console.log(err);
-          return;
+          return self;
         }
 
         //It's a configuration files or dictionary
@@ -34,6 +36,8 @@ var Combine;
           setDir(sourceFile);
         }
       });
+
+      return self;
     };
 
     //get output stream
@@ -65,10 +69,7 @@ var Combine;
       });
 
       watch && files.forEach(function(file) {
-        if (list.indexOf(file) < 0) {
-          watchFile(file);
-          list.push(file);
-        };
+        watchFile(path.join(dir, file), combine);
       });
 
       self.files = files;
@@ -82,7 +83,7 @@ var Combine;
 
       //Combine at the first running, then watching the changes.
       if (combineDir()) {
-        watch && fs.watch(directory, combineDir);
+        watch && watchFile(directory, combineDir);
       }
     };
 
@@ -95,16 +96,21 @@ var Combine;
       };
 
       //Listen on the change on the configuration file
-      watch && fs.watch(configuration, combineCfg);
+      watch && watchFile(configuration, combineCfg);
 
       //combine at the first running
       combineCfg();
     };
 
     //Watch changes on a file
-    var watchFile = function(file) {
+    var watchFile = function(file, caller) {
       try {
-        fs.watch(path.join(dir, file), combine);
+        if (list.indexOf(file) < 0) {
+          list.push(file);
+          watchers.push(
+            fs.watch(file, caller)
+          );
+        }
       } catch (err) {
         console.log("watchFile", file, err);
       }
@@ -179,17 +185,33 @@ var Combine;
       return r;
     };
 
-    //
-    init();
+    //Stop watch listening the chages
+    var stop = function() {
+      try {
+        watchers.forEach(function(watcher) {
+          watcher.close();
+        });
+      } catch (err){
+        console.log("stop", err);
+      }
+
+      return self;
+    };
+
+    //public API
+    self.init = init;
+    self.stop = stop;
+
+    return self;
   };
 
 })();
 
 
 /*
-* call it from command lines
-* -i filepath: input directory or cfg file
-* -o filepath: output files
+* Call it from command lines
+* -i: filepath: input directory or path of files.list
+* -o: filepath: output files
 * -w: keep watch the changes?
 */
 (function() {
@@ -214,6 +236,6 @@ var Combine;
       input   = parsing(args, '-i'),
       output  = parsing(args, '-o');
 
-  input && output && Combine(input, output, args.indexOf(' -w') > 0);
+  input && output && (new Combine(input, output, args.indexOf(' -w') > 0)).init();
 
 })();
