@@ -1,7 +1,7 @@
 /*
 * Description: Combine the files into one, support directory and config files.
 * Author: Kris Zhang
-* Blog: http://c52u.com
+* https://github.com/newghost/node-combine
 */
 
 //Combine namespace
@@ -12,7 +12,7 @@ var Combine;
   var fs = require("fs"),
       path = require("path");
 
-  Combine = module.exports = function(sourceFile, targetFile, watch) {
+  Combine = module.exports = function(source, targetFile, watch) {
     var self      = this,
         list      = [],           //watch list, files, directory, configuration
         watchers  = [],           //watcher list, fsWatch objects
@@ -22,20 +22,27 @@ var Combine;
 
     //Interface
     var init = function() {
-      //Combine type, it's a directory or cfg file
-      fs.stat(sourceFile, function(err, stat) {
-        if (err) {
-          console.log(err);
-          return self;
-        }
+      switch (source.constructor) {
+        case Array:        //It's file list
+          setList(source);
+          break;
+        case String:       //It's configuration file or directory path
+          //Combine type, it's a directory or cfg file
+          fs.stat(source, function(err, stat) {
+            if (err) {
+              console.log(err);
+              return self;
+            }
 
-        //It's a configuration files or dictionary
-        if (stat.isFile()) {
-          setCfg(sourceFile);
-        } else {
-          setDir(sourceFile);
-        }
-      });
+            //It's a configuration files or dictionary
+            if (stat.isFile()) {
+              setCfg(source);
+            } else {
+              setDir(source);
+            }
+          });
+          break;
+      }
 
       return self;
     };
@@ -51,30 +58,10 @@ var Combine;
       return stream;
     };
 
-    //get files from cfgFile, return absolute file path
-    var getFiles = function(cfgPath) {
-      var contents = fs.readFileSync(cfgPath, 'utf-8'),
-          files = [],
-          lastIdx = cfgPath.lastIndexOf('\\');
-
-      //redefine directory
-      dir = cfgPath.substring(0, lastIdx > -1 ? lastIdx : cfgPath.lastIndexOf('/') );
-
-      //read a file line-by-line
-      contents.match(/[^\r\n]+/g).forEach(function(line) {
-        //ignore comments that begin with '#'
-        if (line[0] != '#') {
-          files.push(line);
-        }
-      });
-
-      watch && files.forEach(function(file) {
-        watchFile(path.join(dir, file), combine);
-      });
-
-      self.files = files;
-
-      return files;
+    //Watch changes on file list
+    var setList = function(files) {
+      watchList(files);
+      combine();
     };
 
     //Watch changes on source folder
@@ -102,6 +89,28 @@ var Combine;
       combineCfg();
     };
 
+    //get files from cfgFile, return absolute file path
+    var getFiles = function(cfgPath) {
+      var contents = fs.readFileSync(cfgPath, 'utf-8'),
+          files = [],
+          lastIdx = cfgPath.lastIndexOf('\\');
+
+      //redefine directory
+      dir = cfgPath.substring(0, lastIdx > -1 ? lastIdx : cfgPath.lastIndexOf('/') );
+
+      //read a file line-by-line
+      contents.match(/[^\r\n]+/g).forEach(function(line) {
+        //ignore comments that begin with '#'
+        if (line[0] != '#') {
+          files.push(line);
+        }
+      });
+
+      watchList(files);
+
+      return files;
+    };
+
     //Watch changes on a file
     var watchFile = function(file, caller) {
       try {
@@ -114,6 +123,15 @@ var Combine;
       } catch (err) {
         console.log("watchFile", file, err);
       }
+    };
+
+    //Watch set of files
+    var watchList = function(files) {
+      watch && files.forEach(function(file) {
+        watchFile(path.join(dir, file), combine);
+      });
+
+      self.files = files;
     };
 
     //Combine directory
@@ -205,6 +223,22 @@ var Combine;
     return self;
   };
 
+  /* Static method:
+   * parsing parameters from command line params
+   * etc, node combine.js -i configfile.path -o outputfile.path
+   * the parameter will be: '-' + one character, like: parsing('-o');
+   */
+  Combine.parse = function(args, key) {
+    if (!key || key.length != 2 || key[0] != '-') return;
+
+    var reg = new RegExp(" " + key + "((?! -\\w).)*", "g"),
+        param = args.match(reg);
+
+    if (param && param[0]) {
+      return param[0].substr(4, 500);
+    }
+  };
+
 })();
 
 
@@ -216,25 +250,9 @@ var Combine;
 */
 (function() {
 
-  /*
-   * parsing parameters from command line
-   * etc, node combine.js -i configfile.path -o outputfile.path
-   * the parameter will be: '-' + one character, like: parsing('-o');
-   */
-  var parsing = function(args, key) {
-    if (!key || key.length != 2 || key[0] != '-') return;
-
-    var reg = new RegExp(" " + key + "((?! -\\w).)*", "g"),
-        param = args.match(reg);
-
-    if (param && param[0]) {
-      return param[0].substr(4, 500);
-    }
-  };
-
   var args    = process.argv.join(' '),
-      input   = parsing(args, '-i'),
-      output  = parsing(args, '-o');
+      input   = Combine.parse(args, '-i'),
+      output  = Combine.parse(args, '-o');
 
   input && output && (new Combine(input, output, args.indexOf(' -w') > 0)).init();
 
