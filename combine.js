@@ -12,7 +12,7 @@ var Combine;
   var fs = require("fs"),
       path = require("path");
 
-  Combine = module.exports = function(source, targetFile, watch) {
+  Combine = module.exports = function(source, targetFile, watch, runFirst) {
     var self      = this,
         list      = [],           //watch list, files, directory, configuration
         watchers  = [],           //watcher list, fsWatch objects
@@ -20,6 +20,9 @@ var Combine;
         dir       = "";           //combine root directory
 
     self.files = [];              //combine list
+
+    //default parameters
+    (typeof runFirst == "undefined") && (runFirst = true);
 
     //Interface
     var init = function() {
@@ -62,7 +65,7 @@ var Combine;
     //Watch changes on file list
     var setList = function(files) {
       watchList(files);
-      combine();
+      runFirst && combine();
     };
 
     //Watch changes on source folder
@@ -70,9 +73,8 @@ var Combine;
       dir = directory;
 
       //Combine at the first running, then watching the changes.
-      if (combineDir()) {
-        watch && watchFile(directory, combineDir);
-      }
+      watch && watchFile(directory, combineDir);
+      runFirst && combineDir();
     };
 
     //Watch chagnes on configuration fiel
@@ -80,7 +82,7 @@ var Combine;
       var combineCfg = function() {
         //get file list from the configuration files.
         getFiles(configuration);
-        combine();
+        runFirst && combine();
       };
 
       //Listen on the change on the configuration file
@@ -171,6 +173,8 @@ var Combine;
       timer = setTimeout(function() {
         timer = null;
       }, 300);
+
+      console.log("Output >> %s", targetFile);
 
       var oStream = getStream(),
           r = true;

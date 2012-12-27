@@ -2,7 +2,7 @@ var fs    = require("fs"),
     qs    = require("querystring"),
     path  = require("path");
 
-var Combine = require('./combine.js');
+var Combine   = require('./combine.js');
 
 var CombineEx = module.exports = function(configFile, watch) {
 
@@ -69,8 +69,8 @@ var CombineEx = module.exports = function(configFile, watch) {
           l = lines.length;
 
       do {
-        //config start with $
-        if (lines[i][0] == '$') {
+        //config begin with ?
+        if (lines[i][0] == '?') {
           //parse the configuration;
           /*
           in:   directory or configuration path
@@ -81,7 +81,7 @@ var CombineEx = module.exports = function(configFile, watch) {
 
           //parse the list in the configuration;
           while(++i < l) {
-            if (lines[i][0] != "$") {
+            if (lines[i][0] != "?") {
               //base folder + file's name
               files.push(path.join(cfg.in, lines[i]));
             } else {
@@ -89,11 +89,19 @@ var CombineEx = module.exports = function(configFile, watch) {
             }
           };
 
+          //Parse input parameters
+          cfg.watch = typeof cfg.watch == "undefined" 
+              ? watch
+              : cfg.watch == "true" || cfg.watch == "1";
+          cfg.run = typeof cfg.run == "undefined"
+              ? true
+              : cfg.run   == "true" || cfg.run   == "1";
+
           var combine;
 
           files.length > 0
-            ? (combine = new Combine(files, cfg.out, watch))
-            : (combine = new Combine(cfg.in, cfg.out, watch));
+            ? (combine = new Combine(files,  cfg.out, cfg.watch, cfg.run))
+            : (combine = new Combine(cfg.in, cfg.out, cfg.watch, cfg.run));
 
           combine.init();
           combines.push(combine);
