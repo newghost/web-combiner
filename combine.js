@@ -16,6 +16,7 @@ var Combine;
     var self      = this,
         list      = [],           //watch list, files, directory, configuration
         watchers  = [],           //watcher list, fsWatch objects
+        timer     = null,         //avoid execute twice
         dir       = "";           //combine root directory
 
     self.files = [];              //combine list
@@ -161,6 +162,15 @@ var Combine;
 
     //Combine set of files into one
     var combine = function() {
+      /*
+      Avoid execute twice at the same time
+      When make change on file, two change events will be popupped.
+      So make hot fix for it
+      */
+      if (timer) return;
+      timer = setTimeout(function() {
+        timer = null;
+      }, 300);
 
       var oStream = getStream(),
           r = true;
