@@ -44,11 +44,19 @@ Sample: Configuration
 
 Parameters:
 --------------
+In configuration file
 - ?:      Parameter begin with "?"
 - in:     Input file path, it can be configuration file or dictionary;
-- run:    Running at the first time?
+- run:    Running combine at the first time?
 - watch:  Keep watching the changes?
+
+Parameters:
+--------------
+In command line, priority will be higher than parameters in configuration file
+- -i: Input file path, it can be configuration file or dictionary;
+- -r: Running combine at the first time?
+- -w: Keep watching the changes?
 
 Sample: CombineEx
 --------------
-    node ./combineEx.js -i static/MakeFile.cfg -w
+    node ./combineEx.js -i static/MakeFile.cfg -w -r

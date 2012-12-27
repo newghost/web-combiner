@@ -9,8 +9,8 @@ var Combine;
 
 (function() {
 
-  var fs = require("fs"),
-      path = require("path");
+  var fs    = require("fs"),
+      path  = require("path");
 
   Combine = module.exports = function(source, targetFile, watch, runFirst) {
     var self      = this,

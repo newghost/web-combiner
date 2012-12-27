@@ -4,7 +4,7 @@ var fs    = require("fs"),
 
 var Combine   = require('./combine.js');
 
-var CombineEx = module.exports = function(configFile, watch) {
+var CombineEx = module.exports = function(configFile, watch, run) {
 
   var self      = this,
       combines  = [],
@@ -61,6 +61,7 @@ var CombineEx = module.exports = function(configFile, watch) {
       //read a file line-by-line
       contents.match(/[^\r\n]+/g).forEach(function(line) {
         //ignore comments that begin with '#'
+        line = line.trim();
         (line[0] != '#') && lines.push(line.trim());
       });
 
@@ -89,19 +90,20 @@ var CombineEx = module.exports = function(configFile, watch) {
             }
           };
 
-          //Parse input parameters
-          cfg.watch = typeof cfg.watch == "undefined" 
-              ? watch
-              : cfg.watch == "true" || cfg.watch == "1";
-          cfg.run = typeof cfg.run == "undefined"
-              ? true
-              : cfg.run   == "true" || cfg.run   == "1";
+          /*
+          * Parse force run at the first time parameters, default is true
+          * default
+          *   watch: false
+          *   run:   true
+          */
+          var _watch  = watch || cfg.watch == "true" || cfg.watch == "1",
+              _run    = run   || (cfg.run != "false" && cfg.run != "0");
 
           var combine;
 
           files.length > 0
-            ? (combine = new Combine(files,  cfg.out, cfg.watch, cfg.run))
-            : (combine = new Combine(cfg.in, cfg.out, cfg.watch, cfg.run));
+            ? (combine = new Combine(files,  cfg.out, _watch, _run))
+            : (combine = new Combine(cfg.in, cfg.out, _watch, _run));
 
           combine.init();
           combines.push(combine);
@@ -126,8 +128,9 @@ var CombineEx = module.exports = function(configFile, watch) {
 
   var args    = process.argv.join(' '),
       config  = Combine.parse(args, '-i'),
-      watch   = args.indexOf(' -w') > 0;
+      watch   = args.indexOf(' -w') > 0,
+      run     = args.indexOf(' -r') > 0;
 
-  config && CombineEx(config, watch).init();
+  config && CombineEx(config, watch, run).init();
 
 })();
