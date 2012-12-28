@@ -237,12 +237,12 @@ var Combine;
     return self;
   };
 
-  /* Static method:
-   * parsing parameters from command line params
+  /*
+   * Parsing parameters from command line params
    * etc, node combine.js -i configfile.path -o outputfile.path
    * the parameter will be: '-' + one character, like: parsing('-o');
    */
-  Combine.parse = function(args, key) {
+  var parse = function(args, key) {
     if (!key || key.length != 2 || key[0] != '-') return;
 
     var reg = new RegExp(" " + key + "((?! -\\w).)*", "g"),
@@ -252,6 +252,35 @@ var Combine;
       return param[0].substr(4, 500);
     }
   };
+
+  /*
+  * Join path with old separator, etc: "/" or "\"
+  */
+  var join = function() {
+    var args  = arguments,
+        l     = args.length;
+
+    if (l < 1) return "";
+
+    var arg       = args[0],
+        separator = arg.indexOf('\\') > -1 ? '\\' : '/',
+        joinPath  = arg;
+
+    for (var i = 1; i < l; i++) {
+      var endChar = joinPath[joinPath.length - 1];
+
+      //fix separator
+      (endChar != '/' && endChar != '\\') && (joinPath += separator);
+
+      joinPath += args[i];
+    }
+
+    return joinPath;
+  };
+
+  // Static method
+  Combine.parse = parse;
+  Combine.join  = join;
 
 })();
 

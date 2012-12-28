@@ -83,8 +83,8 @@ var CombineEx = module.exports = function(configFile, watch, run) {
           //parse the list in the configuration;
           while(++i < l) {
             if (lines[i][0] != "?") {
-              //base folder + file's name
-              files.push(path.join(cfg.in, lines[i]));
+              //base folder + file's name, using old separator
+              files.push(Combine.join(cfg.in, lines[i]));
             } else {
               break;
             }
