@@ -5,18 +5,18 @@ Combine separate file into one using Node.js
 
 Parameters
 --------------
-- -i: input file path, it can be configuration file or dictionary;
-- -o: output file path;
-- -w: keep watching the changes, if no parameter just combine once;
+- -in:    input file path, it can be configuration file or dictionary;
+- -out:   output file path;
+- -watch: keep watching the changes, if no parameter just combine once;
 
 
 Sample: Combine directory
 --------------
-    node ./combine.js -i static/css -o static/live/src.js -w
+    node ./combine.js -in static/css              -out static/live/src.js -watch true
 
 Sample: Combine file list 
 --------------
-    node ./combine.js -i static/js/makefile.inc -o static/live/src.js -w
+    node ./combine.js -in static/js/makefile.inc  -out static/live/src.js -watch true
 
 
 CombineEx
@@ -52,16 +52,17 @@ In configuration file
 - ?:      Parameter begin with "?"
 - $:      Commands that execute after combined.
 - in:     Input file path, it can be configuration file or dictionary;
+- out:    output file path;
 - run:    Running combine at the first time?
 - watch:  Keep watching the changes?
+
+Sample: CombineEx
+--------------
+    node ./combineEx.js -in static/MakeFile.cfg -watch true -run true
 
 Parameters:
 --------------
 In command line, priority will be higher than parameters in configuration file
-- -i: Input file path, it can be configuration file or dictionary;
-- -r: Running combine at the first time?
-- -w: Keep watching the changes?
-
-Sample: CombineEx
---------------
-    node ./combineEx.js -i static/MakeFile.cfg -w -r
+- -in:    Input file path, it can be configuration file or dictionary;
+- -run:   Running combine at the first time?
+- -watch: Keep watching the changes?

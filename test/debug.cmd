@@ -1,2 +1,2 @@
 #!/bin/bash
-node ./../combineEx.js -i static/MakeFile.cfg -w
+node ./../combineEx.js -in static/MakeFile.cfg -watch true

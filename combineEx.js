@@ -145,9 +145,13 @@ var CombineEx = module.exports = function(configFile, watch, run) {
 (function() {
 
   var args    = process.argv.join(' '),
-      config  = Combine.parse(args, '-i'),
-      watch   = args.indexOf(' -w') > 0,
-      run     = args.indexOf(' -r') > 0;
+      config  = Combine.parse(args, '-in'),
+      watch   = Combine.parse(args, '-watch'),
+      run     = Combine.parse(args, '-run');
+
+  //default parameter: watch is false, run is true
+  watch = watch == "true" || watch == "1";
+  run   = run != "false"  && run != "0";
 
   config && CombineEx(config, watch, run).init();
 

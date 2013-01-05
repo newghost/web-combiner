@@ -247,14 +247,15 @@ var Combine;
    * the parameter will be: '-' + one character, like: parsing('-o');
    */
   var parse = function(args, key) {
-    if (!key || key.length != 2 || key[0] != '-') return;
+    if (!key || key[0] != '-') return;
 
-    var reg = new RegExp(" " + key + "((?! -\\w).)*", "g"),
+    var reg = new RegExp(" " + key + "[ \t]+[^ $]+", "g"),
         param = args.match(reg);
 
     if (param && param[0]) {
-      return param[0].substr(4, 500);
+      return param[0].trim().substr(key.length).trim();
     }
+    return "";
   };
 
   /*
@@ -298,9 +299,15 @@ var Combine;
 (function() {
 
   var args    = process.argv.join(' '),
-      input   = Combine.parse(args, '-i'),
-      output  = Combine.parse(args, '-o');
+      input   = Combine.parse(args, '-in'),
+      output  = Combine.parse(args, '-out'),
+      watch   = Combine.parse(args, '-watch'),
+      run     = Combine.parse(args, '-run');
 
-  input && output && (new Combine(input, output, args.indexOf(' -w') > 0)).init();
+  //default parameter: watch is false, run is true
+  watch = watch == "true" || watch == "1";
+  run   = run != "false"  && run != "0";
+
+  input && output && Combine(input, output, watch).init();
 
 })();
