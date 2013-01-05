@@ -1,6 +1,7 @@
-var fs    = require("fs"),
-    qs    = require("querystring"),
-    path  = require("path");
+var fs            = require("fs"),
+    qs            = require("querystring"),
+    path          = require("path"),
+    child_process = require("child_process");
 
 var Combine   = require('./combine.js');
 
@@ -44,9 +45,7 @@ var CombineEx = module.exports = function(configFile, watch, run) {
     So make hot fix for it
     */
     if (timer) return;
-    timer = setTimeout(function() {
-      timer = null;
-    }, 300);
+    timer = setTimeout(function() { timer = null; }, 300);
 
     fs.readFile(configFile, function(err, contents) {
       if (err) {
@@ -78,11 +77,16 @@ var CombineEx = module.exports = function(configFile, watch, run) {
           out:  output file path
           */
           var cfg   = qs.parse(lines[i].substr(1)),
+              cmd   = "",
               files = [];
 
           //parse the list in the configuration;
           while(++i < l) {
-            if (lines[i][0] != "?") {
+            var firstChar = lines[i][0];
+
+            if (firstChar == "$") {
+              cmd = lines[i].substr(1);
+            } else if (firstChar != "?") {
               //base folder + file's name, using old separator
               files.push(Combine.join(cfg.in, lines[i]));
             } else {
@@ -104,6 +108,20 @@ var CombineEx = module.exports = function(configFile, watch, run) {
           files.length > 0
             ? (combine = new Combine(files,  cfg.out, _watch, _run))
             : (combine = new Combine(cfg.in, cfg.out, _watch, _run));
+
+          //Is commands there, persistent commands
+          cmd && (function(cmd) {
+            combine.onChange = function() {
+              console.log("Execute onChange:", cmd);
+              child_process.exec(cmd, function (err, stdout, stderr) {
+                if (err || stderr) {
+                  console.log(err, stderr);
+                  return
+                }
+                console.log(stdout);
+              });
+            }
+          })(cmd);
 
           combine.init();
           combines.push(combine);

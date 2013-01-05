@@ -202,7 +202,10 @@ var Combine;
           }
         });
         oStream.end();
-        
+
+        //trigger onChange event
+        self.onChange && self.onChange();
+
         var endTime = new Date();
         console.log("count:",
           files.length,
@@ -231,8 +234,9 @@ var Combine;
     };
 
     //public API
-    self.init = init;
-    self.stop = stop;
+    self.init     = init;
+    self.stop     = stop;
+    self.onChange = null;
 
     return self;
   };
