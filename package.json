@@ -1,7 +1,7 @@
 {
   "name": "web-combiner",
   "description": "Combine & inline & minify js/css/html for web pages, build single file app",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "newghost <kris.newghost@gmail.com>",
   "dependencies": {
     "jsdom": "0.6.1",

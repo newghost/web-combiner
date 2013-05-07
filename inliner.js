@@ -134,7 +134,7 @@ module.exports = inline;
 
   process.argv.forEach(function(arg) {
     arg != "node"
-      && arg.indexOf("inliner.js") < 0
+      && arg.indexOf("inliner") < 0
       && args.push(arg);
   });
 
