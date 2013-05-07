@@ -66,3 +66,17 @@ In command line, priority will be higher than parameters in configuration file
 - -in:    Input file path, it can be configuration file or dictionary;
 - -run:   Running combine at the first time?
 - -watch: Keep watching the changes?
+
+
+Inliner
+==============
+
+Make css/js inlined
+
+Useage:
+----
+
+    #debug mode
+    $ node ./inliner.js mob/mob-lite.html mob/mob-lite.src.html
+    #release mode
+    $ ./inliner.js mob/mob-lite.html mob/mob-lite.min.html true
