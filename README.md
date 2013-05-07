@@ -71,12 +71,12 @@ In command line, priority will be higher than parameters in configuration file
 Inliner
 ==============
 
-Make css/js inlined
+Make css/js inlined and minified
 
 Useage:
 ----
 
-    #debug mode
+    #debug mode:   just inlined
     $ node ./inliner.js mob/mob-lite.html mob/mob-lite.src.html
-    #release mode
+    #release mode: minified css/js
     $ ./inliner.js mob/mob-lite.html mob/mob-lite.min.html true
