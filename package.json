@@ -1,0 +1,24 @@
+{
+  "name": "web-combiner",
+  "description": "Combine & inline & minify js/css/html for web pages, build single file app",
+  "version": "0.0.1",
+  "author": "newghost <kris.newghost@gmail.com>",
+  "dependencies": {
+    "jsdom": "0.6.1",
+    "uglify-js": "2.3.0"
+  },
+  "keywords": [
+    "combine",
+    "inline",
+    "javascript",
+    "css",
+    "html"
+  ],
+  "repository": "git://github.com/newghost/node-combine.git",
+  "main": "./combine.js",
+  "bin": {
+    "combine":    "./combine.js",
+    "combineEx":  "./combineEx.js",
+    "inliner":    "./inliner.js"
+  }
+}
