@@ -312,6 +312,6 @@ var Combine;
 
   input && output 
     ? Combine(input, output, watch).init()
-    : console.log("Useage:\n$ ./combine -in input_file -out output_file -watch [release]");
+    : console.log("Useage:\n$ combine -in input_file -out output_file -watch [release]");
 
 })();

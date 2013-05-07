@@ -1,7 +1,7 @@
 {
   "name": "web-combiner",
   "description": "Combine & inline & minify js/css/html for web pages, build single file app",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "author": "newghost <kris.newghost@gmail.com>",
   "dependencies": {
     "jsdom": "0.6.1",
@@ -15,7 +15,7 @@
     "html"
   ],
   "repository": "git://github.com/newghost/node-combine.git",
-  "main": "./combine.js",
+  "main": "./index.js",
   "bin": {
     "combine":    "./combine.js",
     "combineEx":  "./combineEx.js",

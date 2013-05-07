@@ -1,7 +1,33 @@
+node-combine
+==============
+Combine, inline, minify tool for js/css/html
+
+Install
+--------------
+install global
+
+    sudo npm install web-combiner -g
+    #useage
+    inliner mob/mob-lite.html mob/mob-lite.min.html true
+
+
+Develop
+--------------
+
+install locally
+
+    npm install web-combiner
+
+node app:
+
+    var combiner = require("web-combiner")
+      , inliner = combiner.inliner
+      , combine = combiner.combine
+      , combineEx = combiner.combineEx;
+
 Combine
 ==============
-Combine separate file into one using Node.js
-
+Combine files into one
 
 Parameters
 --------------
@@ -12,11 +38,13 @@ Parameters
 
 Sample: Combine directory
 --------------
-    node ./combine.js -in static/css              -out static/live/src.js -watch true
+
+    combine -in static/css  -out static/live/src.js -watch true
 
 Sample: Combine file list 
 --------------
-    node ./combine.js -in static/js/makefile.inc  -out static/live/src.js -watch true
+
+    combine -in static/js/makefile.inc  -out static/live/src.js -watch true
 
 
 CombineEx
@@ -58,7 +86,8 @@ In configuration file
 
 Sample: CombineEx
 --------------
-    node ./combineEx.js -in static/MakeFile.cfg -watch true -run true
+
+    combineEx -in static/MakeFile.cfg -watch true -run true
 
 Parameters:
 --------------
@@ -71,12 +100,12 @@ In command line, priority will be higher than parameters in configuration file
 Inliner
 ==============
 
-Make css/js inlined and minified
+Make css/js inlined
 
 Useage:
 ----
 
-    #debug mode:   just inlined
-    $ node ./inliner.js mob/mob-lite.html mob/mob-lite.src.html
-    #release mode: minified css/js
-    $ ./inliner.js mob/mob-lite.html mob/mob-lite.min.html true
+    #debug mode just inlined
+    $ inliner mob/mob-lite.html mob/mob-lite.src.html
+    #release mode inlined and minified
+    $ inliner mob/mob-lite.html mob/mob-lite.min.html true

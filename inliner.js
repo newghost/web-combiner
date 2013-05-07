@@ -140,5 +140,5 @@ module.exports = inline;
 
   args.length > 1 
     ? inline.apply(this, args)
-    : console.log("Useage:\n$ ./inliner srcUrl tarUrl [release]");
+    : console.log("Useage:\n$ inliner srcUrl tarUrl [release]");
 }());

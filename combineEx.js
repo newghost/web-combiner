@@ -7,7 +7,7 @@ var fs            = require("fs"),
 
 var Combine   = require('./combine.js');
 
-var CombineEx = module.exports = function(configFile, watch, run) {
+var CombineEx = function(configFile, watch, run) {
 
   var self      = this,
       combines  = [],
@@ -139,6 +139,8 @@ var CombineEx = module.exports = function(configFile, watch, run) {
 };
 
 
+module.exports = CombineEx;
+
 /*
 * Call it from command lines
 * -in: configuration path
@@ -158,6 +160,6 @@ var CombineEx = module.exports = function(configFile, watch, run) {
 
   config
     ? CombineEx(config, watch, run).init()
-    : console.log("Useage:\n$ ./combineEx -in config_path");
+    : console.log("Useage:\n$ combineEx -in config_path");
 
 })();
