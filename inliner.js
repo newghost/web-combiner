@@ -46,7 +46,7 @@ var inline = function(htmlUrl, tarUrl, release) {
 
   jsdom.env({
     html:     htmlUrl,
-    scripts: ["js/jquery-1.9.1.min.js"],
+    scripts:  path.join(__dirname, "./jquery-1.9.1.min.js"),
     done: function (errors, window) {
       var $ = window.$
         , html;
