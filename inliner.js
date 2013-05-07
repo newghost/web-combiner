@@ -1,4 +1,4 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 
 //depandences
 //npm install jsdom
@@ -36,11 +36,6 @@ function removeComments(element) {
 }
 
 var inline = function(htmlUrl, tarUrl, release) {
-  if (!htmlUrl && !tarUrl) {
-    console.log("Useage:\n$ ./inline.js srcUrl tarUrl [release]");
-    return
-  };
-
   var htmlDir =  path.dirname(htmlUrl);
 
   var getFile = function(url) {
@@ -143,5 +138,7 @@ module.exports = inline;
       && args.push(arg);
   });
 
-  args.length > 1 && inline.apply(this, args);
+  args.length > 1 
+    ? inline.apply(this, args)
+    : console.log("Useage:\n$ ./inliner srcUrl tarUrl [release]");
 }());

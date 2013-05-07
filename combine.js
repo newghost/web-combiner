@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /*
 * Description: Combine the files into one, support directory and config files.
 * Author: Kris Zhang
@@ -292,9 +294,9 @@ var Combine;
 
 /*
 * Call it from command lines
-* -i: filepath: input directory or path of files.list
-* -o: filepath: output files
-* -w: keep watch the changes?
+* -in: filepath: input directory or path of files.list
+* -out: filepath: output files
+* -watch: keep watch the changes?
 */
 (function() {
 
@@ -308,6 +310,8 @@ var Combine;
   watch = watch == "true" || watch == "1";
   run   = run != "false"  && run != "0";
 
-  input && output && Combine(input, output, watch).init();
+  input && output 
+    ? Combine(input, output, watch).init()
+    : console.log("Useage:\n$ ./combine -in input_file -out output_file -watch [release]");
 
 })();

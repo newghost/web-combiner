@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var fs            = require("fs"),
     qs            = require("querystring"),
     path          = require("path"),
@@ -139,8 +141,9 @@ var CombineEx = module.exports = function(configFile, watch, run) {
 
 /*
 * Call it from command lines
-* -i: configuration path
-* -w: keep watch the changes?
+* -in: configuration path
+* -watch: keep watch the changes?
+* -run: run at once
 */
 (function() {
 
@@ -153,6 +156,8 @@ var CombineEx = module.exports = function(configFile, watch, run) {
   watch = watch == "true" || watch == "1";
   run   = run != "false"  && run != "0";
 
-  config && CombineEx(config, watch, run).init();
+  config
+    ? CombineEx(config, watch, run).init()
+    : console.log("Useage:\n$ ./combineEx -in config_path");
 
 })();
