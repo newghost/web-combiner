@@ -1,4 +1,4 @@
-node-combine
+web-combiner
 ==============
 Combine, inline, minify tool for js/css/html
 
