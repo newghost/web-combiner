@@ -4,10 +4,13 @@ Combine, inline, minify tool for js/css/html
 
 Install
 --------------
-install global
+Linux: install global, for windows please install Visual C++ 2010 Express, first.
 
     sudo npm install web-combiner -g
-    #useage
+
+useage
+
+    #true: minifiy css/js/html after inlined to one page.
     inliner mob/mob-lite.html mob/mob-lite.min.html true
 
 
